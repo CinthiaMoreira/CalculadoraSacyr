@@ -68,7 +68,6 @@
       color: #2c3e50;
     }
 
-    /* Tabla azul claro */
     .tabla-azul {
       background-color: #d9e8fc;
     }
@@ -79,17 +78,21 @@
       text-align: center;
     }
 
-    /* Texto informativo más pequeño */
     p.info-small {
       font-size: 0.9em;
       color: #555;
     }
 
-    /* Tooltips */
+    .label-tooltip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     .tooltip-container {
       position: relative;
-      display: inline-block;
-      margin-left: 5px;
+      display: inline-flex;
+      align-items: center;
       vertical-align: middle;
     }
 
@@ -97,17 +100,20 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
+      min-width: 14px;
       padding: 0;
       border: 1px solid #2c7da0;
       border-radius: 50%;
       background-color: #fff;
       color: #2c7da0;
       font-family: Arial, sans-serif;
-      font-size: 11px;
+      font-size: 9px;
       font-weight: bold;
+      line-height: 1;
       cursor: help;
+      box-sizing: border-box;
     }
 
     .tooltip-text {
@@ -115,19 +121,19 @@
       opacity: 0;
       position: absolute;
       z-index: 10;
-      bottom: 135%;
+      bottom: 150%;
       left: 50%;
       transform: translateX(-50%);
-      width: 260px;
-      padding: 10px 12px;
+      width: 240px;
+      padding: 9px 11px;
       border-radius: 5px;
       background-color: #173b57;
       color: #fff;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: normal;
-      line-height: 1.5;
+      line-height: 1.4;
       text-align: left;
-      box-shadow: 0 2px 6px rgb(0 0 0 / 0.2);
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
       transition: opacity 0.2s ease;
       pointer-events: none;
     }
@@ -139,10 +145,18 @@
     }
 
     @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      th, td {
+        padding: 8px;
+      }
+
       .tooltip-text {
+        width: 200px;
         left: 0;
         transform: none;
-        width: 220px;
       }
     }
   </style>
@@ -151,7 +165,7 @@
 <body>
   <img
     src="https://www.efactornetwork.com/images/logo.png"
-    alt="Logotipo de eFactor Network"
+    alt="Logo eFactor Network"
     class="logo"
   />
 
@@ -160,31 +174,36 @@
     Simule el costo financiero de sus operaciones de anticipo de facturas de Sacyr.
   </p>
 
-  <!-- Primera tabla: spread, SOFR y tasa anual -->
   <table>
     <tr>
       <th>Spread</th>
-      <td><span id="spredText">3.75%</span></td>
+      <td><span id="spreadText">3.75%</span></td>
     </tr>
     <tr>
       <th>
-        SOFR del día
-        <span class="tooltip-container">
-          <button
-            type="button"
-            class="tooltip-icon"
-            aria-label="Información sobre la tasa SOFR"
-            aria-describedby="sofrTooltip"
-          >i</button>
-          <span class="tooltip-text" id="sofrTooltip" role="tooltip">
-            El tipo de Term SOFR aplicable depende del plazo correspondiente
-            a la operación. Utilice la tasa del plazo que corresponda
-            al vencimiento de la factura (por ejemplo, 1, 3 o 6 meses).
+        <span class="label-tooltip">
+          SOFR del día
+          <span class="tooltip-container">
+            <button
+              type="button"
+              class="tooltip-icon"
+              aria-label="Información sobre la tasa SOFR"
+              aria-describedby="tooltipSofr"
+            >i</button>
+            <span class="tooltip-text" id="tooltipSofr" role="tooltip">
+              El tipo de Term SOFR aplicable depende del plazo correspondiente a la operación. Utilice la tasa del plazo que corresponda al vencimiento de la factura (por ejemplo, 1, 3 o 6 meses).
+            </span>
           </span>
         </span>
       </th>
       <td>
-        <input type="number" step="0.01" id="sofr" value="4.05" />
+        <input
+          type="number"
+          step="0.01"
+          id="sofr"
+          value="4.05"
+          aria-label="SOFR del día en porcentaje"
+        />
       </td>
     </tr>
     <tr>
@@ -203,19 +222,27 @@
     y actualícela manualmente si es necesario.
   </p>
 
-  <!-- Segunda tabla azul: fecha de vencimiento e importe de la factura -->
   <table class="tabla-azul">
     <tr>
       <th>Fecha de vencimiento</th>
-      <td><input type="date" id="fechaVencimiento" /></td>
+      <td>
+        <input type="date" id="fechaVencimiento" />
+      </td>
     </tr>
     <tr>
       <th>Importe de la factura (USD)</th>
-      <td><input type="number" step="0.01" id="montoFactura" min="0" /></td>
+      <td>
+        <input
+          type="number"
+          step="0.01"
+          min="0"
+          id="montoFactura"
+          aria-label="Importe de la factura en dólares estadounidenses"
+        />
+      </td>
     </tr>
   </table>
 
-  <!-- Resultados -->
   <table>
     <tr>
       <th>Días de anticipo</th>
@@ -227,16 +254,18 @@
     </tr>
     <tr>
       <th>
-        Costo financiero
-        <span class="tooltip-container">
-          <button
-            type="button"
-            class="tooltip-icon"
-            aria-label="Fórmula del costo financiero"
-            aria-describedby="costoTooltip"
-          >i</button>
-          <span class="tooltip-text" id="costoTooltip" role="tooltip">
-            Costo financiero = ((Tasa anual ÷ 100) ÷ 360) × días de anticipo × importe de la factura.
+        <span class="label-tooltip">
+          Costo financiero
+          <span class="tooltip-container">
+            <button
+              type="button"
+              class="tooltip-icon"
+              aria-label="Información sobre el cálculo del costo financiero"
+              aria-describedby="tooltipCosto"
+            >i</button>
+            <span class="tooltip-text" id="tooltipCosto" role="tooltip">
+              Costo financiero = ((Tasa anual ÷ 100) ÷ 360) × días de anticipo × importe de la factura.
+            </span>
           </span>
         </span>
       </th>
@@ -261,20 +290,19 @@
   </p>
 
   <script>
-    // Parámetros de la operación
     const spread = 3.75;
     const comisionBancaria = 15;
 
     function calcular() {
       const valorSofr = document.getElementById('sofr').value;
-      const sofr = parseFloat(valorSofr);
+      const sofr = valorSofr === '' ? 0 : parseFloat(valorSofr);
       const tasaSofr = Number.isFinite(sofr) ? sofr : 0;
       const tasaAnual = spread + tasaSofr;
 
       document.getElementById('tasaAnualText').textContent =
         tasaAnual.toFixed(2) + '%';
 
-      // Mostrar siempre la comisión bancaria fija
+      // La comisión bancaria permanece visible en todo momento.
       document.getElementById('comisionBancaria').textContent =
         comisionBancaria.toFixed(2) + ' USD';
 
@@ -286,10 +314,9 @@
       if (
         !fechaInput ||
         montoInput === '' ||
-        !Number.isFinite(parseFloat(montoInput))
+        !Number.isFinite(parseFloat(montoInput)) ||
+        parseFloat(montoInput) < 0
       ) {
-        // Vaciar los resultados que dependen de la fecha y el importe.
-        // La comisión bancaria permanece visible.
         document.getElementById('diasAnticipados').textContent = '';
         document.getElementById('tasaProporcional').textContent = '';
         document.getElementById('costoFinanciero').textContent = '';
@@ -299,20 +326,12 @@
 
       const montoFactura = parseFloat(montoInput);
 
-      if (montoFactura < 0) {
-        document.getElementById('diasAnticipados').textContent = '';
-        document.getElementById('tasaProporcional').textContent = '';
-        document.getElementById('costoFinanciero').textContent = '';
-        document.getElementById('montoRecibir').textContent = '';
-        return;
-      }
-
-      // Calcular los días naturales hasta el vencimiento
+      // Calcular los días naturales hasta el vencimiento usando UTC.
       const [anio, mes, dia] = fechaInput.split('-').map(Number);
       const fechaVencimiento = Date.UTC(anio, mes - 1, dia);
 
       const hoy = new Date();
-      const inicioHoy = Date.UTC(
+      const inicioHoyUTC = Date.UTC(
         hoy.getFullYear(),
         hoy.getMonth(),
         hoy.getDate()
@@ -321,16 +340,15 @@
       const diasAnticipados = Math.max(
         0,
         Math.floor(
-          (fechaVencimiento - inicioHoy) / (1000 * 60 * 60 * 24)
+          (fechaVencimiento - inicioHoyUTC) / (1000 * 60 * 60 * 24)
         )
       );
 
-      // Calcular la tasa proporcional y el costo financiero
       const tasaProporcional = tasaAnual * diasAnticipados / 360;
       const costoFinanciero =
         montoFactura * (tasaProporcional / 100);
 
-      // Descontar el costo financiero y la comisión bancaria
+      // Descontar el costo financiero y la comisión bancaria.
       const montoRecibir =
         montoFactura - costoFinanciero - comisionBancaria;
 
